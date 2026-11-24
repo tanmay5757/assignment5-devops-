@@ -1,0 +1,20 @@
+
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - ACCOUNT_ID=513816987491
+      - REGION=ap-south-1
+      - REPOSITORY=flask-docker-app
+      - IMAGE_TAG=latest
+      - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
+
+  build:
+    commands:
+      - docker build -t $REPOSITORY:$IMAGE_TAG .
+
+  post_build:
+    commands:
+      - docker tag $REPOSITORY:$IMAGE_TAG $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:$IMAGE_TAG
+      - docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:$IMAGE_TAG
